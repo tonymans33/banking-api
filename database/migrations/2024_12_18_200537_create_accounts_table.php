@@ -13,6 +13,10 @@ return new class extends Migration
     {
         Schema::create('accounts', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('user_id')->nullable()->constrained('users')->nullOnDelete();
+            $table->string('account_number')->unique();
+            $table->decimal('balance', 16, 4)->default(0);
+            $table->softDeletes();
             $table->timestamps();
         });
     }
