@@ -6,6 +6,7 @@ use App\Traits\ApiResponseTrait;
 use Error;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Exception;
+use Illuminate\Auth\AuthenticationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Database\QueryException;
 use Illuminate\Database\UniqueConstraintViolationException;
@@ -16,6 +17,7 @@ use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Throwable;
+use Illuminate\Support\Str;
 
 class Handler extends ExceptionHandler
 {
@@ -44,9 +46,33 @@ class Handler extends ExceptionHandler
     public function render($request, Throwable $e): JsonResponse|Response
     {
         // If the request expects a JSON response, then return a JSON formatted exception response
-        if ($request->expectsJson()) {
+        if ($request->expectsJson() || Str::contains($request->path(), 'api')) {
             // Log the exception
             Log::error($e);
+
+            // If the exception is a NotFoundHttpException, then return a 404 Not Found response
+            if ($e instanceof AuthenticationException) {
+                $statusCode = Response::HTTP_UNAUTHORIZED;
+
+
+                return $this->apiResponse([
+                    'message' => "Unauthenticated, Or Token Expired. please try to login again!",
+                    'success' => false,
+                    'exception' => $e,
+                    'error_code' => $statusCode,
+                ], $statusCode);
+            }
+
+            // If the exception is a NotFoundHttpException, then return a 404 Not Found response
+            if ($e instanceof NotFoundHttpException) {
+
+                return $this->apiResponse([
+                    'message' => $e->getMessage(),
+                    'success' => false,
+                    'exception' => $e,
+                    'error_code' => $e->getStatusCode(),
+                ], $e->getStatusCode());
+            }
 
             // If the exception is a ValidationException, then return a 422 Unprocessable Entity response
             if ($e instanceof ValidationException) {
