@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Dtos\UserDto;
 use App\Http\Requests\LoginUserRequest;
 use App\Http\Requests\RegisterUserRequest;
-use App\Interfaces\UserDto;
 use App\Models\User;
 use App\Services\UserService;
 use Illuminate\Contracts\Debug\ExceptionHandler;

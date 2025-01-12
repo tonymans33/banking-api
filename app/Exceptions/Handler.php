@@ -3,6 +3,7 @@
 namespace App\Exceptions;
 
 use App\Traits\ApiResponseTrait;
+use BadMethodCallException;
 use Error;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Exception;
@@ -18,6 +19,7 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Throwable;
 use Illuminate\Support\Str;
+use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
 
 class Handler extends ExceptionHandler
 {
@@ -49,6 +51,18 @@ class Handler extends ExceptionHandler
         if ($request->expectsJson() || Str::contains($request->path(), 'api')) {
             // Log the exception
             Log::error($e);
+
+            // If the exception is a MethodNotAllowedHttpException, then return a 404 Not Found response
+            if ($e instanceof MethodNotAllowedHttpException) {
+                $statusCode = Response::HTTP_METHOD_NOT_ALLOWED;
+
+                return $this->apiResponse([
+                    'message' => $e->getMessage(),
+                    'success' => false,
+                    'exception' => $e,
+                    'error_code' => $statusCode,
+                ], $statusCode);
+            }
 
             // If the exception is a NotFoundHttpException, then return a 404 Not Found response
             if ($e instanceof AuthenticationException) {
@@ -99,6 +113,7 @@ class Handler extends ExceptionHandler
                 ], $statusCode);
             }
 
+
             // If the exception is a UniqueConstraintViolationException, then return a 500 Internal Server Error response
             if ($e instanceof UniqueConstraintViolationException) {
                 $statusCode = Response::HTTP_INTERNAL_SERVER_ERROR;
@@ -120,6 +135,41 @@ class Handler extends ExceptionHandler
                     'success' => false,
                     'exception' => $e,
                     'error_code' => $statusCode
+                ], $statusCode);
+            }
+
+            // If the exception is a PinHasAlreadyBeenSetException, then return a 400 Not Found response
+            if ($e instanceof PinHasAlreadyBeenSetException) {
+                $statusCode = Response::HTTP_BAD_REQUEST;
+
+                return $this->apiResponse([
+                    'message' => $e->getMessage(),
+                    'success' => false,
+                    'exception' => $e,
+                    'error_code' => $statusCode,
+                ], $statusCode);
+            }
+            // If the exception is a PinNotSetException, then return a 400 Not Found response
+            if ($e instanceof PinNotSetException) {
+                $statusCode = Response::HTTP_BAD_REQUEST;
+
+                return $this->apiResponse([
+                    'message' => $e->getMessage(),
+                    'success' => false,
+                    'exception' => $e,
+                    'error_code' => $statusCode,
+                ], $statusCode);
+            }
+
+            // If the exception is a InvalidPinLengthException, then return a 400 Not Found response
+            if ($e instanceof InvalidPinLengthException) {
+                $statusCode = Response::HTTP_BAD_REQUEST;
+
+                return $this->apiResponse([
+                    'message' => $e->getMessage(),
+                    'success' => false,
+                    'exception' => $e,
+                    'error_code' => $statusCode,
                 ], $statusCode);
             }
 

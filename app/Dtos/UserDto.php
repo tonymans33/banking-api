@@ -1,8 +1,9 @@
 <?php
 
-namespace App\Interfaces;
+namespace App\Dtos;
 
 use App\Http\Requests\RegisterUserRequest;
+use App\Interfaces\DtoInterface;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
