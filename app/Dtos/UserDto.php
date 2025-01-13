@@ -14,11 +14,11 @@ class UserDto implements DtoInterface
     private ?int $id;
     private string $email;
     private string $name;
-    private string $phone_number;
+    private string $phoneNumber;
     private string $password;
     private ?string $pin;
-    private ?Carbon $created_at;
-    private ?Carbon $updated_at;
+    private ?Carbon $createdAt;
+    private ?Carbon $updatedAt;
 
 
     /**
@@ -64,9 +64,9 @@ class UserDto implements DtoInterface
     /**
      * Get the value of phone_number
      */ 
-    public function getPhone_number()
+    public function getPhoneNumber()
     {
-        return $this->phone_number;
+        return $this->phoneNumber;
     }
 
     /**
@@ -74,9 +74,9 @@ class UserDto implements DtoInterface
      *
      * @return  self
      */ 
-    public function setPhone_number($phone_number)
+    public function setPhoneNumber($phoneNumber)
     {
-        $this->phone_number = $phone_number;
+        $this->phoneNumber = $phoneNumber;
 
         return $this;
     }
@@ -124,9 +124,9 @@ class UserDto implements DtoInterface
     /**
      * Get the value of created_at
      */ 
-    public function getCreated_at()
+    public function getCreatedAt()
     {
-        return $this->created_at;
+        return $this->createdAt;
     }
 
     /**
@@ -134,9 +134,9 @@ class UserDto implements DtoInterface
      *
      * @return  self
      */ 
-    public function setCreated_at($created_at)
+    public function setCreatedAt($createdAt)
     {
-        $this->created_at = $created_at;
+        $this->createdAt = $createdAt;
 
         return $this;
     }
@@ -144,9 +144,9 @@ class UserDto implements DtoInterface
     /**
      * Get the value of updated_at
      */ 
-    public function getUpdated_at()
+    public function getUpdatedAt()
     {
-        return $this->updated_at;
+        return $this->updatedAt;
     }
 
     /**
@@ -154,9 +154,9 @@ class UserDto implements DtoInterface
      *
      * @return  self
      */ 
-    public function setUpdated_at($updated_at)
+    public function setUpdatedAt($updatedAt)
     {
-        $this->updated_at = $updated_at;
+        $this->updatedAt = $updatedAt;
 
         return $this;
     }
@@ -189,24 +189,24 @@ class UserDto implements DtoInterface
         $userDto->setName($request->name);
         $userDto->setEmail($request->email);
         $userDto->setPassword($request->password);
-        $userDto->setPhone_number($request->phone_number);
+        $userDto->setPhoneNumber($request->phone_number);
         
         return $userDto;
 
     }
 
-    public static function fromModel(User|Model $model): DtoInterface {
+    public static function fromModel(User|Model $model): UserDto {
 
         $userDto = new UserDto();
 
         $userDto->setId($model->id);
         $userDto->setName($model->name);
         $userDto->setEmail($model->email);
-        $userDto->setPhone_number($model->phone_number);
+        $userDto->setPhoneNumber($model->phone_number);
         $userDto->setPassword($model->password);
         $userDto->setPin($model->pin);
-        $userDto->setCreated_at($model->created_at);
-        $userDto->setUpdated_at($model->updated_at);
+        $userDto->setCreatedAt($model->createdAt);
+        $userDto->setUpdatedAt($model->updatedAt);
 
         return $userDto;
     }
@@ -217,8 +217,8 @@ class UserDto implements DtoInterface
             'name' => $model->name,
             'email' => $model->email,
             'phone_number' => $model->phone_number,
-            'created_at' => $model->created_at,
-            'updated_at' => $model->updated_at
+            'created_at' => $model->createdAt,
+            'updated_at' => $model->updatedAt
         ];
     }
 
