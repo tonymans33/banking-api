@@ -3,13 +3,13 @@
 namespace App\Listeners;
 
 use App\Enums\TransactionCategoryEnum;
-use App\Events\DepositEvent;
 use App\Events\TransactionEvent;
+use App\Events\WithdrawalEvent;
 use App\Services\TransactionService;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 
-class DepositListener
+class WithdrawalListener
 {
     /**
      * Create the event listener.
@@ -24,14 +24,15 @@ class DepositListener
      */
     public function handle(TransactionEvent $event): void
     {
-        if($event->transactionDto->getCategory() != TransactionCategoryEnum::DEPOSIT->value) {
+
+        if($event->transactionDto->getCategory() != TransactionCategoryEnum::WITHDRAWAL->value) {
             return;
         }
 
         $transaction = $this->transactionService->createTransaction($event->transactionDto);
 
         $account = $event->lockedAccount;
-        $account->balance = $account->balance + $event->transactionDto->getAmount();
+        $account->balance = $account->balance - $event->transactionDto->getAmount();
         $account->save();
         $account->refresh();
 

@@ -208,6 +208,18 @@ class Handler extends ExceptionHandler
                 ], $statusCode);
             }
 
+            // If the exception is a InvalidPinException, then return a 400 Not Found response
+            if ($e instanceof InvalidPinException) {
+                $statusCode = Response::HTTP_BAD_REQUEST;
+
+                return $this->apiResponse([
+                    'message' => $e->getMessage(),
+                    'success' => false,
+                    'exception' => $e,
+                    'error_code' => $statusCode,
+                ], $statusCode);
+            }
+
             // If the exception is an Exception or an Error, then return a 500 Internal Server Error response
             if ($e instanceof Exception || $e instanceof Error) {
                 $statusCode = Response::HTTP_INTERNAL_SERVER_ERROR;

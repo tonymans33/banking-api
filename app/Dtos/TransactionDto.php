@@ -194,7 +194,8 @@ class TransactionDto
      * @param string|null $description A description of the deposit
      * @return TransactionDto The created TransactionDto object
      */
-    public function forDeposit(AccountDto $accountDto, string $reference, float|int $amount, string|null $description): TransactionDto{
+    public function forDeposit(AccountDto $accountDto, string $reference, float|int $amount, string|null $description): TransactionDto
+    {
         $dto = new TransactionDto();
 
         $dto->setUserId($accountDto->getUserId())
@@ -206,11 +207,11 @@ class TransactionDto
             ->setDescription($description);
 
         return $dto;
-
     }
 
-    public function forDepositToArray(TransactionDto $transactionDto): array{
-       return [
+    public function forDepositToArray(TransactionDto $transactionDto): array
+    {
+        return [
             'user_id' => $transactionDto->getUserId(),
             'reference' => $transactionDto->getReference(),
             'account_id' => $transactionDto->getAccountId(),
@@ -218,9 +219,36 @@ class TransactionDto
             'category' => $transactionDto->getCategory(),
             'date' => $transactionDto->getDate(),
             'description' => $transactionDto->getDescription(),
-       ];
+        ];
     }
 
+    public function forWithdrawal(AccountDto $accountDto, string $reference, WithdrawDto $withdrawDto): TransactionDto
+    {
+        $dto = new TransactionDto();
+
+        $dto->setUserId($accountDto->getUserId())
+            ->setReference($reference)
+            ->setAccountId($accountDto->getId())
+            ->setAmount($withdrawDto->getAmount())
+            ->setDate(Carbon::now())
+            ->setCategory($withdrawDto->getCategory())
+            ->setDescription($withdrawDto->getDescription());
+
+        return $dto;
+    }
+
+    public function forWithdrawalToArray(TransactionDto $transactionDto): array
+    {
+        return [
+            'user_id' => $transactionDto->getUserId(),
+            'reference' => $transactionDto->getReference(),
+            'account_id' => $transactionDto->getAccountId(),
+            'amount' => $transactionDto->getAmount(),
+            'category' => $transactionDto->getCategory(),
+            'date' => $transactionDto->getDate(),
+            'description' => $transactionDto->getDescription(),
+        ];
+    }
     // /**
     //  * Create TransactionDto from Model
     //  */

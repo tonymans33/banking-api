@@ -1,25 +1,20 @@
-<?php
+<?php 
 
 namespace App\Dtos;
 
 use App\Enums\TransactionCategoryEnum;
-use App\Http\Requests\RegisterUserRequest;
-use App\Interfaces\DtoInterface;
-use App\Models\User;
-use Carbon\Carbon;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Foundation\Http\FormRequest;
 
-class DepositDto
-{
+class WithdrawDto {
+
     private string $accountNumber;
     private int|float $amount;
     private string|null $description;
+    private string $pin;
     private string $category;
 
     /**
      * Get the value of accountNumber
-     */
+     */ 
     public function getAccountNumber()
     {
         return $this->accountNumber;
@@ -29,7 +24,7 @@ class DepositDto
      * Set the value of accountNumber
      *
      * @return  self
-     */
+     */ 
     public function setAccountNumber($accountNumber)
     {
         $this->accountNumber = $accountNumber;
@@ -39,7 +34,7 @@ class DepositDto
 
     /**
      * Get the value of amount
-     */
+     */ 
     public function getAmount()
     {
         return $this->amount;
@@ -49,7 +44,7 @@ class DepositDto
      * Set the value of amount
      *
      * @return  self
-     */
+     */ 
     public function setAmount($amount)
     {
         $this->amount = $amount;
@@ -59,7 +54,7 @@ class DepositDto
 
     /**
      * Get the value of description
-     */
+     */ 
     public function getDescription()
     {
         return $this->description;
@@ -69,7 +64,7 @@ class DepositDto
      * Set the value of description
      *
      * @return  self
-     */
+     */ 
     public function setDescription($description)
     {
         $this->description = $description;
@@ -77,13 +72,12 @@ class DepositDto
         return $this;
     }
 
-
     /**
      * Get the value of category
-     */
+     */ 
     public function getCategory()
     {
-        $this->setCategory(TransactionCategoryEnum::DEPOSIT->value);
+        $this->setCategory(TransactionCategoryEnum::WITHDRAWAL->value);
         return $this->category;
     }
 
@@ -91,9 +85,30 @@ class DepositDto
      * Set the value of category
      *
      * @return  self
-     */
+     */ 
     public function setCategory($category): void
     {
         $this->category = $category;
     }
+
+    /**
+     * Get the value of pin
+     */ 
+    public function getPin()
+    {
+        return $this->pin;
+    }
+
+    /**
+     * Set the value of pin
+     *
+     * @return  self
+     */ 
+    public function setPin($pin)
+    {
+        $this->pin = $pin;
+
+        return $this;
+    }
+
 }

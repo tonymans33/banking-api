@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 namespace App\Services;
 
@@ -10,16 +10,17 @@ use App\Models\Transaction;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Str;
+
 class TransactionService implements TransactionServiceInterface
 {
     public function createTransaction(TransactionDto $transactionDto): Transaction
     {
         $data = [];
-        if($transactionDto->getCategory() == TransactionCategoryEnum::DEPOSIT->value){
+        if ($transactionDto->getCategory() == TransactionCategoryEnum::DEPOSIT->value) {
             $data = $transactionDto->forDepositToArray($transactionDto);
         }
-        if($transactionDto->getCategory() == TransactionCategoryEnum::WITHDRAWAL->value){
-            $data = [];
+        if ($transactionDto->getCategory() == TransactionCategoryEnum::WITHDRAWAL->value) {
+            $data = $transactionDto->forWithdrawalToArray($transactionDto);
         }
         $transaction = $this->modelQuery()->create($data);
         return $transaction;
@@ -49,19 +50,18 @@ class TransactionService implements TransactionServiceInterface
     // {
     //     // implementation for downloading transaction history
     // }
-    public function generateReference(): string{
-        return Str::upper('TF'.'/'. Carbon::now()->getTimestampMs(). '/'. Str::random(4));
+    public function generateReference(): string
+    {
+        return Str::upper('TF' . '/' . Carbon::now()->getTimestampMs() . '/' . Str::random(4));
     }
 
-    public function modelQuery(): Builder{
+    public function modelQuery(): Builder
+    {
         return Transaction::query();
     }
 
-    public function updateTransactionBalance(string $reference, float|int $balance): void{
+    public function updateTransactionBalance(string $reference, float|int $balance): void
+    {
         $this->modelQuery()->where('reference', $reference)->update(['balance' => $balance, 'confirmed' => true]);
     }
-
-
-
-
 }

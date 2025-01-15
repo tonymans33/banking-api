@@ -9,9 +9,15 @@ use App\Events\DepositEvent;
 use App\Interfaces\AccountServiceInterface;
 use App\Models\Account;
 use App\Dtos\UserDto;
+use App\Dtos\WithdrawDto;
+use App\Events\TransactionEvent;
+use App\Events\WithdrawalEvent;
 use App\Exceptions\AccountNumberExistsException;
 use App\Exceptions\AmountToLowException;
+use App\Exceptions\InsufficientBalanceException;
 use App\Exceptions\InvalidAccountNumberException;
+use App\Exceptions\InvalidPinException;
+use App\Http\Requests\WithdrawRequest;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
@@ -58,16 +64,16 @@ class AccountService implements AccountServiceInterface
 
     /**
      * @param DepositDto $depositDto
-     * @return Account
-    */
-    public function deposit(DepositDto $depositDto): void
+     * @return TransactionDto
+     */
+    public function deposit(DepositDto $depositDto): TransactionDto
     {
         $minimumAmount = 500;
-        if($depositDto->getAmount() < $minimumAmount) {
+        if ($depositDto->getAmount() < $minimumAmount) {
             throw new AmountToLowException($minimumAmount);
         }
 
-        try{
+        try {
             DB::beginTransaction();
             $transactionDto = new TransactionDto();
 
@@ -78,14 +84,68 @@ class AccountService implements AccountServiceInterface
             $accountDto = AccountDto::fromModel($lockedAccount);
             $transactionDto = $transactionDto->forDeposit($accountDto, $this->transactionService->generateReference(), $depositDto->getAmount(), $depositDto->getDescription());
 
-            event(new DepositEvent($transactionDto, $accountDto, $lockedAccount));
+            event(new TransactionEvent($transactionDto, $accountDto, $lockedAccount));
             DB::commit();
-            
 
-        } catch(Exception $e){
+
+            return $transactionDto;
+        } catch (Exception $e) {
             DB::rollBack();
             throw $e;
         }
+    }
+
+    /**
+     * @param WithdrawDto $withdrawDto
+     * @return TransactionDto
+     */
+    public function withdraw(WithdrawDto $withdrawDto): TransactionDto
+    {
+        try {
+            DB::beginTransaction();
+
+            $accountQuery = $this->modelQuery()->where('account_number', $withdrawDto->getAccountNumber());
+            $this->accountExists($accountQuery);
+            $lockedAccount = $accountQuery->lockForUpdate()->first();
+            $accountDto = AccountDto::fromModel($lockedAccount);
+
+            if (!$this->userService->validatePin($accountDto->getUserId(), $withdrawDto->getPin())) {
+                throw new InvalidPinException();
+            }
+
+            $this->canWithdraw($accountDto, $withdrawDto);
+            $transactionDto = new TransactionDto();
+            $transactionDto = $transactionDto->forWithdrawal(
+                $accountDto,
+                $this->transactionService->generateReference(),
+                $withdrawDto
+            );
+
+            event(new TransactionEvent($transactionDto, $accountDto, $lockedAccount));
+            DB::commit();
+
+            return $transactionDto;
+        } catch (Exception $e) {
+            DB::rollBack();
+            throw $e;
+        }
+    }
+
+    public function canWithdraw(AccountDto $accountDto, WithdrawDto $withdrawDto): bool
+    {
+
+        // if account is blocked
+
+        // if user has exceeded their limit for the day 
+
+        // if the amount to withdraw is greater than user balance
+        if ($accountDto->getBalance() < $withdrawDto->getAmount()) {
+            throw new InsufficientBalanceException();
+        }
+
+        // if amount left in account is less than min account balance
+
+        return true;
     }
 
     /**
@@ -93,8 +153,9 @@ class AccountService implements AccountServiceInterface
      * @param Builder $accountQuery
      * @throws InvalidAccountNumberException
      */
-    public function accountExists(Builder $accountQuery): void{
-        if($accountQuery->exists() == false){
+    public function accountExists(Builder $accountQuery): void
+    {
+        if ($accountQuery->exists() == false) {
             throw new InvalidAccountNumberException();
         }
     }
