@@ -101,6 +101,11 @@ class AccountService implements AccountServiceInterface
      */
     public function withdraw(WithdrawDto $withdrawDto): TransactionDto
     {
+        $minimumAmount = 500;
+        if ($withdrawDto->getAmount() < $minimumAmount) {
+            throw new AmountToLowException($minimumAmount);
+        }
+
         try {
             DB::beginTransaction();
 
