@@ -16,6 +16,7 @@ class AccountController extends Controller
         $account = $this->accountService->createAccountNumber($userDto);
 
         return $this->sendSuccess(['account' => $account], 'Account number created successfully!');
-    
     }
+
+    
 }

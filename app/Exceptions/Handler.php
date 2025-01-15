@@ -173,6 +173,29 @@ class Handler extends ExceptionHandler
                 ], $statusCode);
             }
 
+            // If the exception is a AmountToLowException, then return a 400 Not Found response
+            if ($e instanceof AmountToLowException) {
+                $statusCode = Response::HTTP_BAD_REQUEST;
+
+                return $this->apiResponse([
+                    'message' => $e->getMessage(),
+                    'success' => false,
+                    'exception' => $e,
+                    'error_code' => $statusCode,
+                ], $statusCode);
+            }
+            // If the exception is a InvalidAccountNumberException , then return a 400 Not Found response
+            if ($e instanceof InvalidAccountNumberException) {
+                $statusCode = Response::HTTP_BAD_REQUEST;
+
+                return $this->apiResponse([
+                    'message' => $e->getMessage(),
+                    'success' => false,
+                    'exception' => $e,
+                    'error_code' => $statusCode,
+                ], $statusCode);
+            }
+
             // If the exception is a InvalidPinLengthException, then return a 400 Not Found response
             if ($e instanceof InvalidPinLengthException) {
                 $statusCode = Response::HTTP_BAD_REQUEST;
