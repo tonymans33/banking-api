@@ -64,4 +64,8 @@ class TransactionService implements TransactionServiceInterface
     {
         $this->modelQuery()->where('reference', $reference)->update(['balance' => $balance, 'confirmed' => true]);
     }
+
+    public function updateTransferId(string $reference, int $transferId): void{
+        $this->modelQuery()->where('reference', $reference)->update(['transfer_id' => $transferId]);
+    }
 }

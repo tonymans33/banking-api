@@ -36,5 +36,9 @@ class DepositListener
         $account->refresh();
 
         $this->transactionService->updateTransactionBalance($event->transactionDto->getReference(), $account->balance);
+
+        if($event->transactionDto->getTransferId()){
+            $this->transactionService->updateTransferId($event->transactionDto->getReference(), $event->transactionDto->getTransferId());
+        }
     }
 }

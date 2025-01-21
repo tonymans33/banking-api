@@ -17,7 +17,7 @@ class TransactionDto
     private string $reference;
     private int $userId;
     private int $accountId;
-    private int $transferId;
+    private ?int $transferId;
     private float $amount;
     private float $balance;
     private string $category;
@@ -76,12 +76,12 @@ class TransactionDto
         return $this;
     }
 
-    public function getTransferId(): int
+    public function getTransferId(): ?int
     {
         return $this->transferId;
     }
 
-    public function setTransferId(int $transferId): self
+    public function setTransferId(?int $transferId): self
     {
         $this->transferId = $transferId;
         return $this;
@@ -204,6 +204,7 @@ class TransactionDto
             ->setAmount($amount)
             ->setCategory(TransactionCategoryEnum::DEPOSIT->value)
             ->setDate(Carbon::now())
+            ->setTransferId(null)
             ->setDescription($description);
 
         return $dto;
@@ -232,6 +233,7 @@ class TransactionDto
             ->setAmount($withdrawDto->getAmount())
             ->setDate(Carbon::now())
             ->setCategory($withdrawDto->getCategory())
+            ->setTransferId(null)
             ->setDescription($withdrawDto->getDescription());
 
         return $dto;

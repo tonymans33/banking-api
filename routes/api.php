@@ -6,6 +6,7 @@ use App\Http\Controllers\AccountWithdrawalController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\OnBoardingController;
 use App\Http\Controllers\PinController;
+use App\Http\Controllers\TransferController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('auth')->group(function () {
@@ -36,6 +37,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
         Route::post('deposit', [AccountDepositController::class, 'deposit']);
         Route::post('withdraw', [AccountWithdrawalController::class, 'withdraw']);
+        Route::post('transfer', [TransferController::class, 'transfer']);
 
     });
 });
