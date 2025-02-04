@@ -11,6 +11,12 @@ class AccountDepositController extends Controller
 {
     public function __construct(private readonly AccountService $accountService){}
 
+    /**
+     * Deposits money into a user's account
+     *
+     * @param DepositRequest $depositRequest
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function deposit(DepositRequest $depositRequest){
 
         $depositDto = new DepositDto();

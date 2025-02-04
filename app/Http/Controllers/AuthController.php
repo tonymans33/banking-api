@@ -14,9 +14,18 @@ use Illuminate\Support\Facades\Auth;
 
 class AuthController extends Controller
 {
-    
+
     public function __construct(private readonly UserService $userService) {}
 
+
+
+    /**
+     * Handle an authentication attempt.
+     *
+     * @param  \App\Http\Requests\RegisterUserRequest  $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    
     public function register(RegisterUserRequest $request): JsonResponse
     {
         $userDto = UserDto::fromApiFormRequest($request);
@@ -25,10 +34,11 @@ class AuthController extends Controller
         return $this->sendSuccess(['user' => $user], 'User created successfully');
     }
 
-    public function login(LoginUserRequest $request): JsonResponse {
+    public function login(LoginUserRequest $request): JsonResponse
+    {
 
         $credentials = $request->validated();
-        if(!Auth::attempt($credentials)) {
+        if (!Auth::attempt($credentials)) {
             return $this->sendError('The provided credentials are incorrect!');
         }
 
@@ -38,13 +48,15 @@ class AuthController extends Controller
         return $this->sendSuccess(['user' => $user, 'token' => $token], 'User logged in successfully');
     }
 
-    public function user(Request $request){
+    public function user(Request $request)
+    {
         return $this->sendSuccess([
             'user' => $request->user(),
         ], 'Authenticated user retrieved successfully!');
     }
 
-    public function logout(Request $request){
+    public function logout(Request $request)
+    {
 
         $user = $request->user();
         $user->tokens()->delete();

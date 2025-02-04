@@ -17,12 +17,9 @@ interface TransactionServiceInterface
     public function modelQuery(): Builder;
     public function createTransaction(TransactionDto $transactionDto): Transaction;
     public function generateReference(): string;
-    // public function getTransactionByReference(): Transaction;
-    // public function getTransactionById(): Transaction;
-    // public function getTransactionsByAccountNumber(): Builder;
-    // public function getTransactionsByUserId(): Builder;
-    // public function downloadTransactionHistory(AccountDto $accountDto, Carbon $fromDate, Carbon $endDate): Collection;
+    public function getTransactionByReference(string $reference): Transaction;
+    public function getTransactionById(int $transactionId): Transaction;
+    public function getTransactionsByAccountNumber(int $accountNumber, Builder $builder): Builder;
+    public function getTransactionsByUserId(int $userId, Builder $builder): Builder;
     public function updateTransactionBalance(string $reference, float|int $balance): void;
-
-
 }

@@ -2,12 +2,12 @@
 
 namespace App\Services;
 
-use App\Dtos\AccountDto;
 use App\Dtos\TransactionDto;
 use App\Enums\TransactionCategoryEnum;
 use App\Interfaces\TransactionServiceInterface;
 use App\Models\Transaction;
 use Carbon\Carbon;
+use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Str;
 
@@ -26,30 +26,37 @@ class TransactionService implements TransactionServiceInterface
         return $transaction;
     }
 
-    // public function getTransactionByReference(): Transaction
-    // {
-    //     // implementation for getting a transaction by reference
-    // }
+    public function getTransactionByReference(string $reference): Transaction
+    {
+        $transaction = $this->modelQuery()->where('reference', $reference)->first();
+        if (!$transaction) {
+            throw new Exception("transaction with the requested reference not found");
+        }
 
-    // public function getTransactionById(): Transaction
-    // {
-    //     // implementation for getting a transaction by ID
-    // }
+        return $transaction;
+    }
 
-    // public function getTransactionsByAccountNumber(): Builder
-    // {
-    //     // implementation for getting transactions by account number
-    // }
+    public function getTransactionById(int $transactionId): Transaction
+    {
+        $transaction = $this->modelQuery()->find($transactionId);
+        if (!$transaction) {
+            throw new Exception("transaction with the requested id not found");
+        }
 
-    // public function getTransactionsByUserId(): Builder
-    // {
-    //     // implementation for getting transactions by user ID
-    // }
+        return $transaction;
+    }
 
-    // public function downloadTransactionHistory(AccountDto $accountDto, Carbon $fromDate, Carbon $endDate): Collection
-    // {
-    //     // implementation for downloading transaction history
-    // }
+    public function getTransactionsByAccountNumber(int $accountNumber, Builder $builder): Builder
+    {
+        return $builder->whereHas('account', fn(Builder $query) => $query->where('account_number', $accountNumber));
+    }
+
+    public function getTransactionsByUserId(int $userId, Builder $builder): Builder
+    {
+        return $builder->where('user_id', $userId);
+    }
+
+
     public function generateReference(): string
     {
         return Str::upper('TF' . '/' . Carbon::now()->getTimestampMs() . '/' . Str::random(4));
@@ -65,7 +72,8 @@ class TransactionService implements TransactionServiceInterface
         $this->modelQuery()->where('reference', $reference)->update(['balance' => $balance, 'confirmed' => true]);
     }
 
-    public function updateTransferId(string $reference, int $transferId): void{
+    public function updateTransferId(string $reference, int $transferId): void
+    {
         $this->modelQuery()->where('reference', $reference)->update(['transfer_id' => $transferId]);
     }
 }
